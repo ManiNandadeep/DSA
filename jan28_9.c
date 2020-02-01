@@ -15,7 +15,7 @@ int main(void)
         if(sum>max)
         {
             max=sum;
-            imax=i;
+            imax=i+1;
             jmax=j;
         }
         if(sum<0)
