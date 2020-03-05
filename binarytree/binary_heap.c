@@ -21,11 +21,11 @@ void TopDownHeapify(int i,int n, int*Heap)
     int l =0;
     while(2*i+2 < n)
     {
-        if( Heap[2*i+1] > Heap[2*i+2])
+        if( Heap[2*i+1] < Heap[2*i+2])
             l = 2*i+1;
         else
             l = 2*i+2;
-        if(Heap[i] < Heap[l])
+        if(Heap[i] > Heap[l])
         {
             int temp = Heap[i];
             Heap[i] = Heap[l];
@@ -35,7 +35,7 @@ void TopDownHeapify(int i,int n, int*Heap)
         else
             break;
     }
-    if(2*i+1<n && Heap[i] < Heap[2*i+1])
+    if(2*i+1<n && Heap[i] > Heap[2*i+1])
     {
         int temp = Heap[i];
         Heap[i] = Heap[2*i+1];
