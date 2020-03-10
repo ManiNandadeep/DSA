@@ -1,86 +1,103 @@
 #include<stdio.h>
 #include<stdlib.h>
-#define max 10000
-void Build(int A[],int ST[],int n)
+#define MAX 100000
+#define INT_MAX 2147483647	
+
+void Build(int A[], int ST[], int n)
 {
-    int i;
-    for(i=0;i<n;i++)
+    for(int i = 0; i<n; i++)
     {
-        ST[n+i-1]=i;
+        ST[n-1+i] = i;
     }
-    for(i=n-2;i>-1;i--)
+    for(int i = n-2; i > -1; i--)
     {
-        if (A[ST[2*i+1]]>A[ST[2*i+2]]) 
+        if(A[ST[2*i+1]] > A[ST[2*i+2]])
         {
-            ST[i]=ST[2*i+2];
+            ST[i] = ST[2*i+2];
         }
-        else 
+        else
         {
-            ST[i]=ST[2*i+1];
+            ST[i] = ST[2*i+1];
         }
     }
 }
-void update(int ST[],int A[],int i,int X,int n)
+
+void Update(int A[], int ST[], int n, int index, int value)
 {
-    A[i]=X;
-    int index=((n-1+i)-1)/2;
-    while(index>0)
+    A[index] = value;
+    int parent = ((n-1+index)-1)/2;
+
+    while( parent > 0)
     {
-        if(A[ST[2*index+1]]>A[ST[2*index+2]]) 
+        if(A[ST[2*parent+1]] > A[ST[2*parent+2]])
         {
-            ST[index]=ST[2*index+2];
+            ST[parent] = ST[2*parent+2];
         }
-        else 
-        {
-            ST[index]=ST[2*index+1];
+        else{
+            ST[parent] = ST[2*parent+1];
         }
-        index=(index-1)/2;
+        parent = (parent-1)/2;
     }
-    ST[0]=A[ST[1]]>A[ST[2]] ? ST[2]:ST[1];
+
+    ST[0] = A[ST[1]] > A[ST[2]] ? ST[2] : ST[1];
 }
-int RMQ(int A[],int ST[],int i,int j,int s,int e,int p,int n)
-{
-    if(j<s || i>e)
-    {  
+
+int ReturnMinQuery(int A[], int ST[], int n, int i, int j, int start, int end, int root)
+{    
+    if (start > j || end < i)
+    {
         return n;
     }
-    if(i<=s && e<=j)
-    { 
-        return ST[p];
+    else if (start >= i && end <= j)
+    {
+        return ST[root];
     }
-    int m=(s+e)/2;
-    
-    int l1=RMQ(A,ST,i,j,s,m,2*p+1,n);
-    int l2=RMQ(A,ST,i,j,m+1,e,2*p+2,n);
-    if (A[l1]<A[l2]) 
-        return l1;
-    else 
-        return l2;
+
+    int mid = (start+end)/2;
+
+    int left = ReturnMinQuery(A,ST,n,i,j,start,mid,2*root+1);
+    int right = ReturnMinQuery(A,ST,n,i,j,mid+1,end,2*root+2);
+
+    if(A[left] < A[right])
+        return left;
+    else
+        return right;
 }
 
-void RangeMinQuery(int A[],int ST[],int i,int j,int n)
+void PrintST(int ST[], int n)
 {
-    printf("\n%d",RMQ(A,ST,i,j,0,n-1,0,n));
+    for(int i= 0; i<2*n-1 ; i++)
+    {
+        printf("%d ",ST[i]);
+    }
+    printf("\n");
 }
 
-int main(void)
+int main()
 {
-    int n;
+    int n; int A[MAX];
+    int ST[MAX];
+
     scanf("%d",&n);
-    int* A=malloc(sizeof(int)*n);
-    // int A[]={1,3,2,7,9,11};
-    // int n=sizeof(A)/sizeof(A[0]);
-    // printf("%d\n",n);
-    int*ST=malloc(sizeof(int)*(2*n-1));
-    for(int i=0;i<n;i++)
+
+    for(int i= 0; i<n ; i++)
     {
         scanf("%d",&A[i]);
     }
-    Build(A,ST,n);
-    for(int i=0;i<2*n-1;i++)
-        printf("%d ",ST[i]);
-    RangeMinQuery(A,ST,1,5,n);
-   // printf("\n%d",RMQ(A,ST,1,5,0,n-1,0,n));
-    return 0;
 
+    A[n] = INT_MAX;
+
+    Build(A,ST,n);
+    printf("Built Segment Tree - ");
+    PrintST(ST,n);
+
+    Update(A,ST,n,1,1); //Update element according to given query 
+    Update(A,ST,n,6,14);
+    printf("Updated Segment Tree - ");
+    PrintST(ST,n);
+
+    int index = ReturnMinQuery(A,ST,n,1,5,0,n-1,0); //Update range according to given query
+    printf("Minimum value in given range (1,5) is %d\n",index);
+
+    return 0;
 }
