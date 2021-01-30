@@ -6,7 +6,7 @@ int main(void)
     int size=sizeof(arr)/sizeof(arr[0]);
     int i,j,imax,jmax;
     int sum;
-    int max=-32767;
+    int max=INT_MIN;
     i=0;
     sum=0;
     for(j=i;j<size;j++)
